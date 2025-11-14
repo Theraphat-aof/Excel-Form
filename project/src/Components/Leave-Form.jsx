@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Plus, Trash2, Calendar, ArrowLeft, Eye } from "lucide-react";
 import styles from "../Styles/Leave-Form.module.css";
 
@@ -100,11 +100,10 @@ export default function LeaveForm() {
   const handleKeyPress = (e, id, newName) => {
     if (e.key === "Enter") {
       handleNameEdit(id, newName);
-      e.target.blur(); // ทำให้ input หลุด focus
+      e.target.blur(); 
     }
     if (e.key === "Escape") {
-      setEditingEmployeeId(null); // ยกเลิกการแก้ไข
-      // อาจจะต้องค้นหาพนักงานเพื่อรีเซ็ตค่าใน input หากมีการพิมพ์ไปแล้ว
+      setEditingEmployeeId(null); 
     }
   };
 
@@ -259,7 +258,13 @@ export default function LeaveForm() {
     const daysInMonth = getDaysInMonth(currentMonth, currentYear);
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
     const days = [];
-    const dayNames = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+    const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+
+    // 🆕 การคำนวณวันปัจจุบัน (Today)
+    const today = new Date();
+    const isCurrentMonthYear =
+      today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+    const todayDate = isCurrentMonthYear ? today.getDate() : null;
 
     // Get current employee data
     const currentEmp = employees.find((e) => e.id === selectedEmployee?.id);
@@ -270,12 +275,20 @@ export default function LeaveForm() {
     }
 
     // Days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
+for (let day = 1; day <= daysInMonth; day++) {
       const leaveType = getLeaveTypeForDate(day);
+      
+      // 🆕 1. ตรวจสอบว่าเป็นวันปัจจุบันหรือไม่
+      const isToday = day === todayDate;
+      
+      // 🆕 2. ตรวจสอบว่าเป็นวันอาทิตย์ (firstDay คือ 0 = อาทิตย์)
+      const dayIndex = (firstDay + day - 1) % 7; 
+      const isSunday = dayIndex === 0;
 
       const dayClasses = [
         styles.dayCell,
         leaveType ? getLeaveTypeColor(leaveType) : styles.dayCellDefault,
+        isToday ? styles.dayCellToday : "", // 🆕 เพิ่ม class สำหรับวันปัจจุบัน
       ];
 
       if (!leaveType) {
@@ -291,10 +304,12 @@ export default function LeaveForm() {
           <div
             className={`${styles.dayNumber} ${
               leaveType ? styles.dayNumberLeave : styles.dayNumberDefault
-            }`}
+            } ${isSunday ? styles.dayNumberSunday : ""}`} 
           >
             {day}
           </div>
+          {isToday && <div className={styles.todayLabel}>วันนี้</div>}
+          
           {leaveType && (
             <div className={styles.dayLeaveLabel}>
               {getLeaveTypeLabel(leaveType)}
@@ -303,15 +318,6 @@ export default function LeaveForm() {
         </div>
       );
     }
-
-    // Determine remaining leave color class
-    const remaining = calculateRemaining(currentEmp || { remainingLeave: 0 });
-    const remainingColorClass =
-      remaining < 0
-        ? styles.summaryRemainingNegative
-        : remaining <= 2
-        ? styles.summaryRemainingWarning
-        : styles.summaryRemainingPositive;
 
     return (
       <div className={styles.container}>
@@ -401,65 +407,16 @@ export default function LeaveForm() {
                   )
                 )}
               </div>
-              <p className={styles.typeSelectorTip}>
-                💡 เคล็ดลับ: คลิกวันที่มีการลาอยู่แล้วเพื่อลบข้อมูลออก
-              </p>
             </div>
 
             {/* Calendar Grid */}
             <div className={styles.calendarGrid}>
-              {dayNames.map((day) => (
-                <div key={day} className={styles.dayNameHeader}>
+              {dayNames.map((day, index) => (
+                <div key={day} className={`${styles.dayNameHeader} ${index === 0 ? styles.sundayHeader : ''}`}>
                   {day}
                 </div>
               ))}
               {days}
-            </div>
-          </div>
-          {/* Summary */}
-          <div className={styles.summaryContainer}>
-            <h4 className={styles.summaryTitle}>📊 สรุปการลาทั้งหมด</h4>
-            <div className={styles.summaryGrid}>
-              <div className={styles.summaryItem}>
-                <div className={styles.summaryItemLabel}>ลาพักร้อน</div>
-                <div
-                  className={`${styles.summaryItemValue} ${styles.summaryVacation}`}
-                >
-                  {currentEmp?.vacation || 0} วัน
-                </div>
-              </div>
-              <div className={styles.summaryItem}>
-                <div className={styles.summaryItemLabel}>ลากิจ</div>
-                <div
-                  className={`${styles.summaryItemValue} ${styles.summaryPersonal}`}
-                >
-                  {currentEmp?.personal || 0} วัน
-                </div>
-              </div>
-              <div className={styles.summaryItem}>
-                <div className={styles.summaryItemLabel}>ลาป่วย</div>
-                <div
-                  className={`${styles.summaryItemValue} ${styles.summarySick}`}
-                >
-                  {currentEmp?.sick || 0} วัน
-                </div>
-              </div>
-              <div className={styles.summaryItem}>
-                <div className={styles.summaryItemLabel}>ขาดงาน</div>
-                <div
-                  className={`${styles.summaryItemValue} ${styles.summaryAbsent}`}
-                >
-                  {currentEmp?.absent || 0} วัน
-                </div>
-              </div>
-              <div className={styles.summaryItem}>
-                <div className={styles.summaryItemLabel}>วันลาคงเหลือ</div>
-                <div
-                  className={`${styles.summaryItemValue} ${remainingColorClass}`}
-                >
-                  {remaining} วัน
-                </div>
-              </div>
             </div>
           </div>
         </div>

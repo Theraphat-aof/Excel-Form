@@ -1,0 +1,83 @@
+/* Styles/Sidebar.module.css */
+
+.sidebar {
+  /* Layout and positioning */
+  width: 250px;
+  min-width: 250px;
+  height: 100vh;
+  position: fixed; /* ตรึงตำแหน่งไว้ */
+  left: 0;
+  top: 0;
+  z-index: 100;
+
+  /* Aesthetics */
+  background: linear-gradient(
+    180deg,
+    #1f2937 0%,
+    #374151 100%
+  ); /* Subtle dark gradient */
+  color: #f3f4f6; /* Light gray text */
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  font-family: "Inter", sans-serif;
+}
+
+.navList {
+  list-style: none;
+  padding: 20px 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.navLink {
+    display: block; /* ทำให้ลิงก์ขยายเต็มความกว้างของ <li> */
+    width: 18vw;
+    padding: 12px 20px;
+    text-decoration: none; /* ลบขีดเส้นใต้ตามปกติของลิงก์ */
+    color: inherit; /* ให้ใช้สีข้อความของ .sidebar (#ecf0f1) */
+    font-size: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* สไตล์เมื่อนำเมาส์ไปชี้ */
+.navLink:hover {
+    cursor: pointer;
+}
+
+/* สไตล์สำหรับลิงก์ที่ถูกเลือก (ถ้าคุณใช้ State/Active Link) */
+/* ถ้าคุณใช้ NavLink ใน react-router-dom ให้ใช้ &.[active] แทน */
+.navLink.active {
+    background-color: #3498db; /* สีฟ้าเด่นสำหรับหน้าที่กำลังใช้งาน */
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 1rem;
+  border-left: 4px solid transparent;
+}
+
+.navItem:hover {
+  background-color: #374151; /* Lighter background on hover */
+  border-left-color: #60a5fa; /* Highlight with blue border */
+  color: #ffffff;
+}
+
+.navIcon {
+  margin-right: 12px;
+  font-size: 1.2rem;
+}
+
+.footer {
+  padding: 20px;
+  font-size: 0.8rem;
+  color: #9ca3af; /* Subdued text color */
+  border-top: 1px solid #4b5563;
+  text-align: center;
+}
