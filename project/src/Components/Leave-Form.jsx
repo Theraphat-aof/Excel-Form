@@ -16,7 +16,7 @@ export default function LeaveForm() {
   const [nameFilter, setNameFilter] = useState("");
   // 🆕 สถานะใหม่: ใช้เก็บหมายเลขหน้าปัจจุบันสำหรับ Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const employeesPerPage = 8; // กำหนดจำนวนพนักงานต่อหน้า
+  const employeesPerPage = 9; // กำหนดจำนวนพนักงานต่อหน้า
 
   // To ensure selectedEmployee is updated after an action in the main view
   useEffect(() => {
