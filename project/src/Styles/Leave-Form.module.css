@@ -7,7 +7,7 @@
 }
 
 .container {
-background-color: #f4f7f9;
+  background-color: #f4f7f9;
 }
 
 .mainWrapper {
@@ -65,9 +65,63 @@ background-color: #f4f7f9;
 
 /* --- Add Employee Form --- */
 .addEmployeeForm {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr; /* 2: input ชื่อ, 1: input วันลา, 2: input filter, 1: button */
+  gap: 15px;
+  align-items: flex-end; /* จัดปุ่มให้อยู่บรรทัดเดียวกับ input */
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.filterEmptyState {
+  text-align: center;
+  padding: 20px;
+  margin-top: 10px;
+  background-color: #fff3cd; /* สีเตือนภัยอ่อนๆ */
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* --- 🆕 Styles for Pagination Controls --- */
+.paginationContainer {
   display: flex;
-  gap: 3rem; /* gap-4 */
-  align-items: flex-end; /* items-end */
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  padding: 10px 0;
+  border-top: 1px solid #ddd;
+}
+
+.paginationButton {
+  background-color: #5a57e3;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin: 0 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, opacity 0.3s;
+  font-weight: 600;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: #4542c2;
+}
+
+.paginationButton:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.pageInfo {
+  font-size: 1rem;
+  color: #333;
+  margin: 0 10px;
+  font-weight: 500;
 }
 
 .inputGroup {
@@ -121,6 +175,8 @@ background-color: #f4f7f9;
   align-items: center;
   gap: 0.5rem; /* gap-2 */
   font-weight: 500; /* font-medium */
+  cursor: pointer;
+  border: none;
 }
 
 .addButton:hover {
@@ -265,10 +321,12 @@ background-color: #f4f7f9;
   color: #2563eb; /* text-blue-600 */
   border-radius: 0.5rem;
   transition: background-color 0.15s ease-in-out;
+  cursor: pointer;
+  border: none;
 }
 
 .actionButtonView:hover {
-  background-color: #eff6ff; /* hover:bg-blue-50 */
+  background-color: #d1e5ff; /* hover:bg-blue-50 */
 }
 
 .actionButtonDelete {
@@ -276,10 +334,12 @@ background-color: #f4f7f9;
   color: #dc2626; /* text-red-600 */
   border-radius: 0.5rem;
   transition: background-color 0.15s ease-in-out;
+  cursor: pointer;
+  border: none;
 }
 
 .actionButtonDelete:hover {
-  background-color: #fef2f2; /* hover:bg-red-50 */
+  background-color: #ffd1d1; /* hover:bg-red-50 */
 }
 
 /* --- Empty State --- */
@@ -319,7 +379,6 @@ background-color: #f4f7f9;
 .calendarHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .backButton {
@@ -330,6 +389,7 @@ background-color: #f4f7f9;
   color: #374151; /* text-gray-700 */
   border-radius: 0.5rem;
   transition: background-color 0.15s ease-in-out;
+  cursor: pointer;
 }
 
 .backButton:hover {
@@ -340,6 +400,7 @@ background-color: #f4f7f9;
   font-size: 1.5rem; /* text-2xl */
   font-weight: 700;
   color: #1f2937;
+  margin-left: auto;
 }
 
 .calendarNav {
@@ -355,6 +416,7 @@ background-color: #f4f7f9;
   transition: background-color 0.15s ease-in-out;
   border-radius: 0.5rem;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .navButton:hover {
@@ -386,6 +448,7 @@ background-color: #f4f7f9;
   display: flex;
   gap: 0.75rem; /* gap-3 */
   flex-wrap: wrap; /* flex-wrap */
+  margin-bottom: 0.5rem; /* mb-2 */
 }
 
 .typeButton {
@@ -397,6 +460,7 @@ background-color: #f4f7f9;
   transition: all 0.2s ease-in-out;
   font-weight: 500;
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .dot {
@@ -570,7 +634,7 @@ background-color: #f4f7f9;
 }
 
 .dayLeaveLabel {
-  font-size: 0.75rem; /* text-xs */
+  font-size: 1.25rem; /* text-xs */
   font-weight: 500; /* font-medium */
   color: white;
 }
@@ -595,4 +659,3 @@ background-color: #f4f7f9;
   background-color: #374151; /* bg-gray-700 */
   color: white;
 }
-

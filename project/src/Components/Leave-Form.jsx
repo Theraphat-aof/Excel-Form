@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Plus, Trash2, Calendar, ArrowLeft, Eye } from "lucide-react";
 import styles from "../Styles/Leave-Form.module.css";
 
@@ -11,8 +11,12 @@ export default function LeaveForm() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [selectedLeaveType, setSelectedLeaveType] = useState("vacation");
-  // 🆕 สถานะใหม่: ใช้เก็บ id ของพนักงานที่กำลังอยู่ในโหมดแก้ไขชื่อ
   const [editingEmployeeId, setEditingEmployeeId] = useState(null);
+  // 🆕 สถานะใหม่: ใช้เก็บข้อความที่ใช้กรองชื่อพนักงาน
+  const [nameFilter, setNameFilter] = useState("");
+  // 🆕 สถานะใหม่: ใช้เก็บหมายเลขหน้าปัจจุบันสำหรับ Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const employeesPerPage = 8; // กำหนดจำนวนพนักงานต่อหน้า
 
   // To ensure selectedEmployee is updated after an action in the main view
   useEffect(() => {
@@ -26,6 +30,11 @@ export default function LeaveForm() {
       }
     }
   }, [employees, selectedEmployee]);
+
+  // 🆕 Reset หน้าปัจจุบันเมื่อมีการกรอง
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [nameFilter]);
 
   const getCurrentDate = () => {
     const now = new Date();
@@ -80,7 +89,6 @@ export default function LeaveForm() {
     );
   };
 
-  // 🆕 ฟังก์ชันใหม่: สำหรับเริ่มและบันทึกการแก้ไขชื่อ
   const handleNameEdit = (id, newName) => {
     if (editingEmployeeId === id) {
       // โหมดบันทึก: ตรวจสอบและบันทึกชื่อ
@@ -96,14 +104,13 @@ export default function LeaveForm() {
     }
   };
 
-  // 🆕 ฟังก์ชันใหม่: สำหรับจัดการการกด Enter เพื่อบันทึก
   const handleKeyPress = (e, id, newName) => {
     if (e.key === "Enter") {
       handleNameEdit(id, newName);
-      e.target.blur(); 
+      e.target.blur();
     }
     if (e.key === "Escape") {
-      setEditingEmployeeId(null); 
+      setEditingEmployeeId(null);
     }
   };
 
@@ -260,7 +267,7 @@ export default function LeaveForm() {
     const days = [];
     const dayNames = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 
-    // 🆕 การคำนวณวันปัจจุบัน (Today)
+    // การคำนวณวันปัจจุบัน (Today)
     const today = new Date();
     const isCurrentMonthYear =
       today.getMonth() === currentMonth && today.getFullYear() === currentYear;
@@ -275,20 +282,20 @@ export default function LeaveForm() {
     }
 
     // Days of the month
-for (let day = 1; day <= daysInMonth; day++) {
+    for (let day = 1; day <= daysInMonth; day++) {
       const leaveType = getLeaveTypeForDate(day);
-      
-      // 🆕 1. ตรวจสอบว่าเป็นวันปัจจุบันหรือไม่
+
+      // 1. ตรวจสอบว่าเป็นวันปัจจุบันหรือไม่
       const isToday = day === todayDate;
-      
-      // 🆕 2. ตรวจสอบว่าเป็นวันอาทิตย์ (firstDay คือ 0 = อาทิตย์)
-      const dayIndex = (firstDay + day - 1) % 7; 
+
+      // 2. ตรวจสอบว่าเป็นวันอาทิตย์ (firstDay คือ 0 = อาทิตย์)
+      const dayIndex = (firstDay + day - 1) % 7;
       const isSunday = dayIndex === 0;
 
       const dayClasses = [
         styles.dayCell,
         leaveType ? getLeaveTypeColor(leaveType) : styles.dayCellDefault,
-        isToday ? styles.dayCellToday : "", // 🆕 เพิ่ม class สำหรับวันปัจจุบัน
+        isToday ? styles.dayCellToday : "", // เพิ่ม class สำหรับวันปัจจุบัน
       ];
 
       if (!leaveType) {
@@ -304,12 +311,12 @@ for (let day = 1; day <= daysInMonth; day++) {
           <div
             className={`${styles.dayNumber} ${
               leaveType ? styles.dayNumberLeave : styles.dayNumberDefault
-            } ${isSunday ? styles.dayNumberSunday : ""}`} 
+            } ${isSunday ? styles.dayNumberSunday : ""}`}
           >
             {day}
           </div>
           {isToday && <div className={styles.todayLabel}>วันนี้</div>}
-          
+
           {leaveType && (
             <div className={styles.dayLeaveLabel}>
               {getLeaveTypeLabel(leaveType)}
@@ -358,7 +365,7 @@ for (let day = 1; day <= daysInMonth; day++) {
             </div>
 
             {/* Leave Type Selector */}
-            <div className={styles.typeSelectorContainer}>
+            <div classNameName={styles.typeSelectorContainer}>
               <p className={styles.typeSelectorLabel}>
                 เลือกประเภทการลา จากนั้นคลิกที่วันในปฏิทิน:
               </p>
@@ -412,7 +419,12 @@ for (let day = 1; day <= daysInMonth; day++) {
             {/* Calendar Grid */}
             <div className={styles.calendarGrid}>
               {dayNames.map((day, index) => (
-                <div key={day} className={`${styles.dayNameHeader} ${index === 0 ? styles.sundayHeader : ''}`}>
+                <div
+                  key={day}
+                  className={`${styles.dayNameHeader} ${
+                    index === 0 ? styles.sundayHeader : ""
+                  }`}
+                >
                   {day}
                 </div>
               ))}
@@ -422,6 +434,25 @@ for (let day = 1; day <= daysInMonth; day++) {
         </div>
       </div>
     );
+  };
+
+  // 🆕 การกรองและการแบ่งหน้า
+  const filteredEmployees = useMemo(() => {
+    return employees.filter((emp) =>
+      emp.name.toLowerCase().includes(nameFilter.toLowerCase())
+    );
+  }, [employees, nameFilter]);
+
+  const totalPages = Math.ceil(filteredEmployees.length / employeesPerPage);
+  const currentEmployees = filteredEmployees.slice(
+    (currentPage - 1) * employeesPerPage,
+    currentPage * employeesPerPage
+  );
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   if (currentView === "calendar") {
@@ -444,8 +475,9 @@ for (let day = 1; day <= daysInMonth; day++) {
             </div>
           </div>
 
-          {/* Add Employee Form */}
+          {/* Add Employee Form & Filter */}
           <div className={styles.addEmployeeForm}>
+            {/* 1. Add Employee Name Input */}
             <div className={styles.inputGroup}>
               <label className={styles.inputLabel}>ชื่อพนักงาน</label>
               <input
@@ -457,6 +489,7 @@ for (let day = 1; day <= daysInMonth; day++) {
                 className={styles.textInput}
               />
             </div>
+            {/* 2. Default Leave Days Input */}
             <div className={styles.inputGroupSmall}>
               <label className={styles.inputLabel}>จำนวนวันลาเริ่มต้น</label>
               <input
@@ -467,6 +500,18 @@ for (let day = 1; day <= daysInMonth; day++) {
                 className={styles.numberInput}
               />
             </div>
+            {/* 🆕 3. Name Filter Input */}
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>กรองชื่อพนักงาน</label>
+              <input
+                type="text"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                placeholder="ค้นหาชื่อ"
+                className={styles.textInput}
+              />
+            </div>
+            {/* 4. Add Button */}
             <button onClick={addEmployee} className={styles.addButton}>
               <Plus className={styles.iconSmall} />
               เพิ่มพนักงาน
@@ -494,7 +539,7 @@ for (let day = 1; day <= daysInMonth; day++) {
                   </tr>
                 </thead>
                 <tbody className={styles.tableBody}>
-                  {employees.map((emp, index) => {
+                  {currentEmployees.map((emp, index) => { // 🆕 ใช้ currentEmployees แทน employees
                     const remaining = calculateRemaining(emp);
                     const remainingClass =
                       remaining < 0
@@ -503,7 +548,6 @@ for (let day = 1; day <= daysInMonth; day++) {
                         ? styles.remainingWarning
                         : styles.remainingPositive;
 
-                    // 🆕 ตรวจสอบว่าพนักงานคนนี้กำลังถูกแก้ไขชื่ออยู่หรือไม่
                     const isEditing = editingEmployeeId === emp.id;
 
                     return (
@@ -514,7 +558,6 @@ for (let day = 1; day <= daysInMonth; day++) {
                         }
                       >
                         <td className={styles.td}>
-                          {/* 🆕 ส่วนการแสดง/แก้ไขชื่อพนักงาน */}
                           {isEditing ? (
                             <input
                               type="text"
@@ -537,13 +580,12 @@ for (let day = 1; day <= daysInMonth; day++) {
                           ) : (
                             <span
                               className={styles.employeeName}
-                              onClick={() => setEditingEmployeeId(emp.id)} // 🆕 เมื่อคลิกจะเข้าสู่โหมดแก้ไข
+                              onClick={() => setEditingEmployeeId(emp.id)}
                               title="คลิกเพื่อแก้ไขชื่อ"
                             >
                               {emp.name}
                             </span>
                           )}
-                          {/* 🆕 สิ้นสุดส่วนการแสดง/แก้ไขชื่อพนักงาน */}
                         </td>
                         <td className={styles.td}>
                           <input
@@ -633,6 +675,36 @@ for (let day = 1; day <= daysInMonth; day++) {
                 </tbody>
               </table>
             </div>
+
+            {/* 🆕 Pagination Controls */}
+            {totalPages > 1 && (
+              <div className={styles.paginationContainer}>
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={styles.paginationButton}
+                >
+                  &lt; ก่อนหน้า
+                </button>
+                <span className={styles.pageInfo}>
+                  หน้า {currentPage} จาก {totalPages}
+                </span>
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={styles.paginationButton}
+                >
+                  ถัดไป &gt;
+                </button>
+              </div>
+            )}
+            
+            {/* 🆕 แสดงสถานะเมื่อกรองแล้วไม่พบข้อมูล */}
+            {filteredEmployees.length === 0 && employees.length > 0 && (
+                <div className={styles.filterEmptyState}>
+                    ไม่พบพนักงานที่ตรงกับ: **{nameFilter}**
+                </div>
+            )}
           </div>
         )}
 
